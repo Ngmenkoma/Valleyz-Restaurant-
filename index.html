@@ -11,8 +11,6 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
 
-
-
   <style>
     * {
       margin: 0; padding: 0; box-sizing: border-box;
@@ -22,15 +20,15 @@
       font-family: 'Poppins', sans-serif;
       background: white;
       color: white;
-      overflow: hidden; /* prevent scroll */
+      overflow-x: hidden;
     }
+    
     .handwriting {
-  font-family: 'Lucida Handwriting', cursive;
-  font-size: 2.5rem;
-  color: #FFD700;
-  letter-spacing: 1px;
-}
-
+      font-family: 'Lucida Handwriting', cursive;
+      font-size: 2.5rem;
+      color: #FFD700;
+      letter-spacing: 1px;
+    }
 
     .section {
       display: none;
@@ -59,6 +57,155 @@
       box-sizing: border-box;
     }
 
+    /* ========== SHOPPING CART STYLES ========== */
+    .cart-container {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      background: #1a1a1a;
+      z-index: 2000;
+      transition: right 0.3s ease;
+      padding: 1.5rem;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+      overflow-y: auto;
+    }
+    
+    .cart-container.open {
+      right: 0;
+    }
+    
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #333;
+    }
+    
+    .cart-items {
+      margin-bottom: 1.5rem;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #333;
+    }
+    
+    .cart-item-info {
+      flex: 1;
+    }
+    
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+    }
+    
+    .cart-item-controls button {
+      background: #333;
+      color: white;
+      border: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    
+    .cart-total {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #FFD700;
+      margin: 1.5rem 0;
+      text-align: right;
+    }
+    
+    .cart-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .cart-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #FFD700;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .cart-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff0000;
+      color: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Menu Tabs Styling */
+    .menu-tabs {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 1rem;
+    }
+    
+    .menu-tab {
+      padding: 0.5rem 1.5rem;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-tab.active {
+      background: #FFD700;
+      color: #000;
+    }
+    
+    .menu-category {
+      display: none;
+    }
+    
+    .menu-category.active {
+      display: block;
+    }
+    
+    .category-title {
+      color: #FFD700;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+    }
+
+    /* ========== REST OF YOUR STYLES ========== */
     .hero-text {
       flex: 1;
       max-width: 50%;
@@ -76,7 +223,7 @@
       border-radius: 10px;
       max-height: 60vh;
       object-fit: cover;
- box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
 
     h1 {
@@ -104,6 +251,8 @@
       font-weight: bold;
       border-radius: 5px;
       text-decoration: none;
+      cursor: pointer;
+      border: none;
     }
 
     .main-nav {
@@ -146,203 +295,247 @@
       .hero-img img {
         max-height: 40vh;
       }
+      
+      .cart-container {
+        width: 100%;
+        right: -100%;
+      }
+      
+      .cart-container.open {
+        right: 0;
+      }
+      
+      .menu-tabs {
+        flex-direction: column;
+      }
     }
+    
     .swiper {
-  background: url('e1.jpg') no-repeat center center;
-  background-size: cover;
-}
+      background: url('e1.jpg') no-repeat center center;
+      background-size: cover;
+    }
 
-.swiper-slide::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4); /* Adjust opacity */
-  z-index: 1;
-}
+    .swiper-slide::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
 
-.swiper-slide > * {
-  position: relative;
-  z-index: 2;
-}
-#menu {
-  padding: 2rem;
-}
+    .swiper-slide > * {
+      position: relative;
+      z-index: 2;
+    }
+    
+    #menu {
+      padding: 2rem;
+    }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
 
-.product-card {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .product-card {
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-}
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    }
 
-.product-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
 
-.product-card h3 {
-  margin: 0.75rem 0 0.25rem;
-  font-size: 1.2rem;
-  color: #FFD700;
-}
+    .product-card h3 {
+      margin: 0.75rem 0 0.25rem;
+      font-size: 1.2rem;
+      color: #FFD700;
+    }
 
-.product-card .price {
-  font-size: 1rem;
-  color: #bbb;
-}
+    .product-card .price {
+      font-size: 1rem;
+      color: #bbb;
+    }
 
-.product-card .btn {
-  margin: 1rem auto;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
-}
+    .product-card .btn {
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      display: inline-block;
+    }
+    
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
 
-.gallery-grid img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: transform 0.3s ease;
-}
+    .gallery-grid img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
 
-.gallery-grid img:hover {
-  transform: scale(1.03);
-}
+    .gallery-grid img:hover {
+      transform: scale(1.03);
+    }
 
-.contact-form {
-  margin-top: 2rem;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+    .contact-form {
+      margin-top: 2rem;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-.contact-form label {
-  font-weight: 500;
-  color: #FFD700;
-}
+    .contact-form label {
+      font-weight: 500;
+      color: #FFD700;
+    }
 
-.contact-form input,
-.contact-form textarea {
-  padding: 0.75rem;
-  border: none;
-  border-radius: 5px;
-  background: #222;
-  color: white;
-  font-size: 1rem;
-}
+    .contact-form input,
+    .contact-form textarea {
+      padding: 0.75rem;
+      border: none;
+      border-radius: 5px;
+      background: #222;
+      color: white;
+      font-size: 1rem;
+    }
 
-.contact-form input:focus,
-.contact-form textarea:focus {
-  outline: 2px solid #FFD700;
-  background: #111;
-}
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: 2px solid #FFD700;
+      background: #111;
+    }
 
-.contact-form .btn {
-  width: fit-content;
-  background: #FFD700;
-  color: #000;
-  font-weight: bold;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-}
+    .contact-form .btn {
+      width: fit-content;
+      background: #FFD700;
+      color: #000;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
 
-.contact-form .btn:hover {
-  background: #fff200;
-}
-#contact {
-  padding-bottom: 5rem; /* Space above the fixed navbar */
-}
+    .contact-form .btn:hover {
+      background: #fff200;
+    }
+    
+    #contact {
+      padding-bottom: 5rem;
+    }
 
-#order {
-  padding-bottom: 5rem;
-}
-/* Hamburger styles */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 30px;
-  height: 22px;
-  cursor: pointer;
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1100;
-}
+    #order {
+      padding-bottom: 5rem;
+    }
+    
+    /* Hamburger styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 22px;
+      cursor: pointer;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1100;
+    }
 
-.hamburger .bar {
-  height: 4px;
-  background-color: #FFD700;
-  border-radius: 5px;
-}
+    .hamburger .bar {
+      height: 4px;
+      background-color: #FFD700;
+      border-radius: 5px;
+    }
 
-/* Hidden menu */
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  position: fixed;
-  top: 60px;
-  right: 1rem;
-  background: #111;
-  padding: 1rem;
-  border-radius: 10px;
-  z-index: 1000;
-}
+    /* Hidden menu */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 60px;
+      right: 1rem;
+      background: #111;
+      padding: 1rem;
+      border-radius: 10px;
+      z-index: 1000;
+    }
 
-.mobile-menu a {
-  color: white;
-  padding: 0.5rem 0;
-  text-decoration: none;
-  font-weight: 500;
-}
+    .mobile-menu a {
+      color: white;
+      padding: 0.5rem 0;
+      text-decoration: none;
+      font-weight: 500;
+    }
 
-.mobile-menu a:hover {
-  color: #FFD700;
-}
+    .mobile-menu a:hover {
+      color: #FFD700;
+    }
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
-  }
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
 
-  .main-nav {
-    display: none;
-  }
+      .main-nav {
+        display: none;
+      }
 
-  .mobile-menu.show {
-    display: flex;
-  }
-}
-
-
+      .mobile-menu.show {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
+
+<!-- Shopping Cart Button -->
+<button class="cart-toggle" onclick="toggleCart()">
+  🛒
+  <span class="cart-count" id="cartCount">0</span>
+</button>
+
+<!-- Shopping Cart Sidebar -->
+<div class="cart-container" id="cartContainer">
+  <div class="cart-header">
+    <h3>Your Order</h3>
+    <button onclick="toggleCart()" style="background: none; border: none; color: #FFD700; font-size: 1.5rem; cursor: pointer;">&times;</button>
+  </div>
+  
+  <div class="cart-items" id="cartItems">
+    <!-- Cart items will be dynamically inserted here -->
+    <p style="text-align: center; color: #888;">Your cart is empty</p>
+  </div>
+  
+  <div class="cart-total">
+    Total: ₵<span id="cartTotal">0.00</span>
+  </div>
+  
+  <div class="cart-actions">
+    <button class="btn" onclick="clearCart()">Clear Cart</button>
+    <button class="btn" onclick="checkout()">Checkout</button>
+  </div>
+</div>
 
 <!-- HOME SWIPER -->
 <section id="home" class="section active">
@@ -377,7 +570,7 @@
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
           <h2>Affordable Prices</h2>
           <p>Enjoy healthy and tasty food without breaking your wallet.</p>
-          <a class="btn" onclick="showSection('about us')">About us</a>
+          <a class="btn" onclick="showSection('about')">About us</a>
         </div>
         <div class="hero-img">
           <img src="s3.jpg" alt="Dish 2">
@@ -422,30 +615,154 @@
     </div>
     <div class="swiper-pagination"></div>
   </div>
-  
-   
 </section>
 
 <!-- MENU -->
 <section id="menu" class="section">
   <h2>Our Menu</h2>
-  <p>Discover our variety of meals from local and international cuisines.</p>
+  <p>Discover our variety of meals and drinks from local and international cuisines.</p>
   
+  <!-- Menu Tabs -->
+  <div class="menu-tabs">
+    <button class="menu-tab active" onclick="showMenuCategory('main')">Main Dishes</button>
+    <button class="menu-tab" onclick="showMenuCategory('cocktails')">Cocktails</button>
+  </div>
 
- <!-- product cards -->
-  <div class="menu-grid">
-      <div class="product-card"><img src="1.jpg" alt="Jolof Rice" /><h3>Jollof Rice</h3><p class="price"> ₵10.00</p><button class="btn" onclick="orderNow('Jollof Rice')">Order Now</button>
-</div>
-      <div class="product-card"><img src="2.jpg" alt="Kenkey" /><h3>Kenkey</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Kenkey')">Order Now</button></div>
-      <div class="product-card"><img src="3.jpg" alt="Waakye" /><h3>Waakye</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Waakye')">Order Now</button></div>
-      <div class="product-card"><img src="4.jpg" alt="Jollof" /><h3>Jollof</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Jollof')">Order Now</button></div>
-      <div class="product-card"><img src="1.jpg" alt="Fufu" /><h3>Fufu</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Fufu')">Order Now</button></div>
-      <div class="product-card"><img src="2.jpg" alt="Banku" /><h3>Banku</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Banku')">Order Now</button></div>
-      <div class="product-card"><img src="3.jpg" alt="Tuo-zaafi" /><h3>Tuo-zaafi</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Tuo-zaafi')">Order Now</button></div>
-      <div class="product-card"><img src="4.jpg" alt="Rice Ball" /><h3>Rice Ball</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Rice Ball')">Order Now</button></div>
-      <div class="product-card"><img src="1.jpg" alt="Plain Rice" /><h3>Plain Rice</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Plain Rice')">Order Now</button></div>
-      <div class="product-card"><img src="2.jpg" alt="kokonte" /><h3>Kokonte</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('kokonte')">Order Now</button></div>
+  <!-- Main Dishes -->
+  <div class="menu-category active" id="mainDishes">
+    <h3 class="category-title">Main Dishes</h3>
+    <div class="menu-grid">
+      <div class="product-card">
+        <img src="1.jpg" alt="Jolof Rice" />
+        <h3>Jollof Rice</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Jollof Rice', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="Kenkey" />
+        <h3>Kenkey</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Kenkey', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="3.jpg" alt="Waakye" />
+        <h3>Waakye</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Waakye', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="4.jpg" alt="Jollof" />
+        <h3>Jollof</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Jollof', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="1.jpg" alt="Fufu" />
+        <h3>Fufu</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Fufu', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="Banku" />
+        <h3>Banku</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Banku', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="3.jpg" alt="Tuo-zaafi" />
+        <h3>Tuo-zaafi</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Tuo-zaafi', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="4.jpg" alt="Rice Ball" />
+        <h3>Rice Ball</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Rice Ball', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="1.jpg" alt="Plain Rice" />
+        <h3>Plain Rice</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Plain Rice', 10, 'main')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="kokonte" />
+        <h3>Kokonte</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="addToCart('Kokonte', 10, 'main')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cocktails -->
+  <div class="menu-category" id="cocktails">
+    <h3 class="category-title">Cocktails</h3>
+    <div class="menu-grid">
+      <div class="product-card">
+        <img src="c1.jpg" alt="Pina Colada" />
+        <h3>Pina Colada</h3>
+        <p class="price">₵25.00</p>
+        <button class="btn" onclick="addToCart('Pina Colada', 25, 'cocktail')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="c2.jpg" alt="Mojito" />
+        <h3>Mojito</h3>
+        <p class="price">₵22.00</p>
+        <button class="btn" onclick="addToCart('Mojito', 22, 'cocktail')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="c3.jpg" alt="Margarita" />
+        <h3>Margarita</h3>
+        <p class="price">₵28.00</p>
+        <button class="btn" onclick="addToCart('Margarita', 28, 'cocktail')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="c4.jpg" alt="Daiquiri" />
+        <h3>Daiquiri</h3>
+        <p class="price">₵24.00</p>
+        <button class="btn" onclick="addToCart('Daiquiri', 24, 'cocktail')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="c5.jpg" alt="Cosmopolitan" />
+        <h3>Cosmopolitan</h3>
+        <p class="price">₵26.00</p>
+        <button class="btn" onclick="addToCart('Cosmopolitan', 26, 'cocktail')">Add to Cart</button>
+      </div>
+      <div class="product-card">
+        <img src="c6.jpg" alt="Mai Tai" />
+        <h3>Mai Tai</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="addToCart('Mai Tai', 30, 'cocktail')">Add to Cart</button>
+      </div>
+        <div class="product-card">
+        <img src="c7.jpg" alt="Mai Tai" />
+        <h3>Mai Tai</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="addToCart('Mai Tai', 30, 'cocktail')">Add to Cart</button>
+      </div>
+        <div class="product-card">
+        <img src="c8.jpg" alt="Mai Tai" />
+        <h3>Mai Tai</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="addToCart('Mai Tai', 30, 'cocktail')">Add to Cart</button>
+      </div>
+        <div class="product-card">
+        <img src="c9.jpg" alt="Mai Tai" />
+        <h3>Mai Tai</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="addToCart('Mai Tai', 30, 'cocktail')">Add to Cart</button>
+      </div>
+        <div class="product-card">
+        <img src="c10.jpg" alt="Mai Tai" />
+        <h3>Mai Tai</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="addToCart('Mai Tai', 30, 'cocktail')">Add to Cart</button>
+      </div>
+    </div>
+  </div>
 </section>
+
 <!-- GALLERY -->
 <section id="gallery" class="section">
   <h2>Gallery</h2>
@@ -461,7 +778,6 @@
     <img src="4.jpg" alt="Gallery Image 6" />
     <img src="1.jpg" alt="Gallery Image 6" />
     <img src="2.jpg" alt="Gallery Image 6" />
-    
   </div>
 </section>
 
@@ -475,8 +791,7 @@
 <section id="contact" class="section">
   <h2>Contact</h2>
   <p>Reach us at: <br>Email: info@valleyz.com <br>Phone: +123 456 7890</p>
-  <!-- CONTACT -->
-
+  
   <h2>Contact</h2>
   <p>Reach us by filling out the form below:</p>
   <form action="https://formspree.io/f/mblkdgdb" method="post" class="contact-form">
@@ -493,11 +808,60 @@
   </form>
 </section>
 
+<!-- ORDER PAGE -->
+<section id="order" class="section">
+  <h2>Place Your Order</h2>
+  <p>Fill in the form below to place your order.</p>
+  <form class="contact-form" id="orderForm">
+    <label for="order-name">Your Name:</label>
+    <input type="text" id="order-name" name="order-name" required>
+    
+    <label for="order-email">Your Email:</label>
+    <input type="email" id="order-email" name="order-email" required>
+    
+    <label for="order-phone">Phone Number:</label>
+    <input type="tel" id="order-phone" name="phone" placeholder="Phone Number" required>
+    
+    <div id="map" style="height: 300px; width: 100%; margin-bottom: 1rem;"></div>
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+    
+    <label>Order Items:</label>
+    <div id="order-items-list" style="margin-bottom: 1rem;">
+      <!-- Cart items will be displayed here -->
+    </div>
+    
+    <label for="order-note">Special Instructions:</label>
+    <textarea id="order-note" name="note" rows="3"></textarea>
+    
+    <label>Total Amount:</label>
+    <input type="text" id="order-total" name="total" readonly style="font-weight: bold; color: #FFD700;">
+    
+    <!-- Payment Method -->
+    <label>Select Payment Method:</label>
+    <div style="margin-bottom: 1rem;">
+      <label><input type="radio" name="payment_method" value="paystack" checked> Pay Online (Paystack)</label><br>
+      <label><input type="radio" name="payment_method" value="bank"> Bank Transfer</label>
+    </div>
+    
+    <!-- Bank Payment Info -->
+    <div id="bank-details" style="display:none; margin-bottom: 1rem;">
+      <h4 style="color:#FFD700;">Bank Transfer Details</h4>
+      <p><strong>Bank:</strong> GCB Bank</p>
+      <p><strong>Account Name:</strong> Valleyz Restaurant</p>
+      <p><strong>Account Number:</strong> 1234567890</p>
+      <label for="payment_proof">Upload Proof of Payment:</label>
+      <input type="file" name="payment_proof" id="payment_proof">
+    </div>
+    
+    <div style="display: flex; gap: 1rem;">
+      <button type="button" id="paystack-btn" class="btn" onclick="payWithPaystack()">Pay with Paystack</button>
+      <button type="submit" id="submit-btn" class="btn" style="background: #333;">Place Order</button>
+    </div>
+  </form>
 </section>
 
 <!-- NAVIGATION -->
-
-<!-- Hamburger Menu -->
 <div class="hamburger" onclick="toggleMenu()">
   <div class="bar"></div>
   <div class="bar"></div>
@@ -508,7 +872,7 @@
   <a href="#home" onclick="switchSection('home')">Home</a>
   <a href="#menu" onclick="switchSection('menu')">Menu</a>
   <a href="#gallery" onclick="switchSection('gallery')">Gallery</a>
-  <a href="#order" onclick="switchSection('about')">About Us</a>
+  <a href="#about" onclick="switchSection('about')">About us</a>
   <a href="#contact" onclick="switchSection('contact')">Contact</a>
 </nav>
 
@@ -520,91 +884,11 @@
   <a onclick="showSection('contact')">Contact</a>
 </div>
 
-
-<!-- ORDER PAGE -->
-<section id="order" class="section">
-  <h2>Place Your Order</h2>
-  <p>Fill in the form below to place your order.</p>
-  <form class="contact-form" onsubmit="confirmOrder(event)">
-    <label for="order-name" onsubmit="return confirmOrder(event)">Your Name:</label>
-    <input type="text" id="order-name" name="order-name" required>
-    <label for="order-email">Your Email:</label>
-    <input type="email" id="order-email" name="order-email" required>
-    <input type="text" name="phone" placeholder="Phone Number" required>
-  <div id="map" style="height: 300px; width: 100%;"></div>
-  <input type="text" id="latitude" name="latitude" readonly>
-  <input type="text" id="longitude" name="longitude" readonly>
-    <label for="order-item">Select Item:</label>
-    <select id="order-item" name="order-item" required>
-      <option value="">-- Choose a Dish --</option>
-      <option value="Jollof Rice">Jollof Rice</option>
-      <option value="Kenkey">Kenkey</option>
-      <option value="Waakye">Waakye</option>
-      <option value="Fufu">Fufu</option>
-      <option value="Banku">Banku</option>
-      <option value="Tuo-zaafi">Tuo-zaafi</option>
-      <option value="Rice Ball">Rice Ball</option>
-      <option value="Plain Rice">Plain Rice</option>
-      <option value="Kokonte">Kokonte</option>
-    </select>
-
-    <label for="order-quantity">Quantity:</label>
-    <input type="number" id="order-quantity" name="order-quantity" min="1" value="1" required>
-
-   <!-- Submit button is disabled initially -->
-<button id="submit-btn" type="button" disabled>Submit Order</button>
-
-        <!-- Payment Method -->
-    <label>Select Payment Method:</label>
-    <label><input type="radio" name="payment_method" value="paystack" checked> Pay Online (Paystack)</label><br>
-    <label><input type="radio" name="payment_method" value="bank"> Bank Transfer</label>
-    <!-- Bank Payment Info -->
-    <div id="bank-details" style="display:none; margin-top: 1rem;">
-      <h4 style="color:#FFD700;">Bank Transfer Details</h4>
-      <p><strong>Bank:</strong> GCB Bank</p>
-      <p><strong>Account Name:</strong> Valleyz Restaurant</p>
-      <p><strong>Account Number:</strong> 1234567890</p>
-      <label for="payment_proof">Upload Proof of Payment:</label>
-      <input type="file" name="payment_proof" id="payment_proof">
-    </div>
-    <!-- Paystack Payment Trigger -->
-    <button type="button" id="paystack-btn" class="btn">Pay with Paystack</button>
-
-  </form>
-</section>
-<script>
-  function confirmOrder(event) {
-    event.preventDefault(); // prevent actual form submission
-
-    const name = document.getElementById('order-name').value;
-    const food = document.getElementById('order-item').value;
-    const qty = document.getElementById('order-quantity').value;
-
-    if (!name || !food || !qty) {
-      alert("Please fill in all fields.");
-      return false;
-    }
-
-   Swal.fire({
-  title: 'Order Received!',
-  text: `Thank you, ${name}! Your order for ${qty} x ${food} has been received.`,
-  icon: 'success',
-  confirmButtonColor: '#FFD700'
-}).then((result) => {
-      if (result.isConfirmed) {
-        // Optionally, redirect to a thank you page or reset the form
-        document.querySelector('.contact-form').reset();
-        showSection('home'); // Go back to home section
-      }
-    });
-
-  }
-</script>
-
-
 <!-- Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script>
+  // Initialize Swiper
   const swiper = new Swiper('.swiper', {
     direction: 'vertical',
     loop: true,
@@ -612,8 +896,7 @@
       delay: 3000,
       disableOnInteraction: false
     },
-    speed:2000,
-    
+    speed: 2000,
   });
 
   // Navigation: show only the selected section
@@ -622,27 +905,40 @@
       sec.classList.remove('active');
     });
     document.getElementById(id).classList.add('active');
-  }
-</script>
-
-<script>
-  function orderNow(foodName) {
-    // Show the order section
-    showSection('order');
-
-    // Fill the dropdown
-    const dropdown = document.getElementById('order-item');
-    if (dropdown) {
-      dropdown.value = foodName;
+    
+    // If showing order section, update the order items list
+    if (id === 'order') {
+      updateOrderForm();
     }
   }
-</script>
-<!-- Google Maps integration -->
-<div id="map" style="height: 300px; width: 100%; margin-top: 10px;"></div>
-<input type="hidden" id="latitude" name="latitude">
-<input type="hidden" id="longitude" name="longitude">
 
-<script>
+  // Mobile menu toggle
+  function toggleMenu() {
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("show");
+  }
+
+  function switchSection(id) {
+    showSection(id);
+    toggleMenu();
+  }
+
+  // Show menu category function
+  function showMenuCategory(category) {
+    // Update tabs
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Show selected category
+    document.querySelectorAll('.menu-category').forEach(cat => {
+      cat.classList.remove('active');
+    });
+    document.getElementById(category === 'main' ? 'mainDishes' : 'cocktails').classList.add('active');
+  }
+
+  // Google Maps integration
   let map;
   let marker;
 
@@ -670,122 +966,320 @@
       document.getElementById("longitude").value = pos.lng().toFixed(6);
     });
   }
-</script>
 
-<!-- Load Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer>
+  // Load Google Maps API
+  function loadGoogleMaps() {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
 
-</script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-document.querySelectorAll('input[name="payment_method"]').forEach((input) => {
-  input.addEventListener('change', function () {
-    const method = this.value;
-    document.getElementById("bank-details").style.display = (method === 'bank') ? 'block' : 'none';
-    document.getElementById("paystack-btn").style.display = (method === 'paystack') ? 'inline-block' : 'none';
+  // Payment method toggle
+  document.querySelectorAll('input[name="payment_method"]').forEach((input) => {
+    input.addEventListener('change', function () {
+      const method = this.value;
+      document.getElementById("bank-details").style.display = (method === 'bank') ? 'block' : 'none';
+      document.getElementById("paystack-btn").style.display = (method === 'paystack') ? 'inline-block' : 'none';
+    });
   });
-});
 
-// Handle Paystack payment
-document.getElementById("paystack-btn").addEventListener("click", function () {
-  const email = document.getElementById("order-email").value;
-  const qty = document.getElementById("order-quantity").value;
-  const item = document.getElementById("order-item").value;
-  const amount = qty * 10 * 100; // ₵10 each, Paystack expects amount in pesewas
-
-  let handler = PaystackPop.setup({
-    key: 'pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf', // Replace with your Paystack public key
-    email: email,
-    amount: amount,
-    currency: 'GHS',
-    ref: 'VALLEYZ_' + Math.floor((Math.random() * 1000000000) + 1),
-    callback: function(response) {
-      Swal.fire('Payment Successful!', 'Reference: ' + response.reference, 'success');
-      document.querySelector('.contact-form').reset();
-      showSection('home');
-    },
-    onClose: function() {
-      Swal.fire('Payment Cancelled', 'You closed the payment window.', 'info');
-    }
-  });
-  handler.openIframe();
-});
-function payWithPaystack() {
-  let handler = PaystackPop.setup({
-    key: "pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf",
-    email: document.getElementById("email").value,
-    amount: parseFloat(document.getElementById("total").value) * 100, // kobo
-    currency: "GHS",
+  // ========== SHOPPING CART FUNCTIONALITY ==========
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+  // Toggle cart visibility
+  function toggleCart() {
+    document.getElementById('cartContainer').classList.toggle('open');
+    updateCartDisplay();
+  }
+  
+  // Add item to cart
+  function addToCart(name, price, category) {
+    const existingItem = cart.find(item => item.name === name);
     
-    onSuccess: function(transaction) {
-      const orderData = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        items: document.getElementById("items").value,
-        total: document.getElementById("total").value,
-        note: document.getElementById("note").value,
-        payment_method: "paystack",
-        payment_status: "paid",
-        latitude: document.getElementById("latitude").value,
-        longitude: document.getElementById("longitude").value
-      };
-       // Enable submit button
-       document.getElementById("submit-btn").disabled = false;
-
-      submitToGoogleSheet(orderData);
-    },
-
-    onClose: function() {
-      alert("Payment was not completed.");
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ 
+        name, 
+        price, 
+        quantity: 1,
+        category 
+      });
+    }
+    
+    saveCart();
+    updateCartDisplay();
+    
+    // Show success message
+    Swal.fire({
+      title: 'Added to Cart!',
+      text: `${name} has been added to your order`,
+      icon: 'success',
+      confirmButtonColor: '#FFD700'
+    });
+  }
+  
+  // Remove item from cart
+  function removeFromCart(name) {
+    cart = cart.filter(item => item.name !== name);
+    saveCart();
+    updateCartDisplay();
+  }
+  
+  // Update item quantity
+  function updateQuantity(name, newQuantity) {
+    const item = cart.find(item => item.name === name);
+    
+    if (item) {
+      if (newQuantity > 0) {
+        item.quantity = newQuantity;
+      } else {
+        removeFromCart(name);
+        return;
+      }
+    }
+    
+    saveCart();
+    updateCartDisplay();
+  }
+  
+  // Clear entire cart
+  function clearCart() {
+    cart = [];
+    saveCart();
+    updateCartDisplay();
+    toggleCart();
+    
+    Swal.fire({
+      title: 'Cart Cleared!',
+      text: 'Your order has been cleared',
+      icon: 'success',
+      confirmButtonColor: '#FFD700'
+    });
+  }
+  
+  // Save cart to localStorage
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+  }
+  
+  // Update cart count badge
+  function updateCartCount() {
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById('cartCount').textContent = count;
+  }
+  
+  // Update cart display
+  function updateCartDisplay() {
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartTotalEl = document.getElementById('cartTotal');
+    
+    if (cart.length === 0) {
+      cartItemsEl.innerHTML = '<p style="text-align: center; color: #888;">Your cart is empty</p>';
+      cartTotalEl.textContent = '0.00';
+      return;
+    }
+    
+    let itemsHTML = '';
+    let total = 0;
+    
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+      
+      itemsHTML += `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <h4>${item.name}</h4>
+            <p>₵${item.price.toFixed(2)} × ${item.quantity}</p>
+          </div>
+          <div class="cart-item-controls">
+            <button onclick="updateQuantity('${item.name}', ${item.quantity - 1})">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="updateQuantity('${item.name}', ${item.quantity + 1})">+</button>
+            <button onclick="removeFromCart('${item.name}')" style="color: #ff5555; margin-left: 10px;">×</button>
+          </div>
+        </div>
+      `;
+    });
+    
+    cartItemsEl.innerHTML = itemsHTML;
+    cartTotalEl.textContent = total.toFixed(2);
+  }
+  
+  // Update order form with cart items
+  function updateOrderForm() {
+    const orderItemsEl = document.getElementById('order-items-list');
+    const orderTotalEl = document.getElementById('order-total');
+    
+    if (cart.length === 0) {
+      orderItemsEl.innerHTML = '<p>No items in cart</p>';
+      orderTotalEl.value = '₵0.00';
+      return;
+    }
+    
+    let itemsHTML = '';
+    let total = 0;
+    
+    cart.forEach(item => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+      
+      itemsHTML += `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>${item.name} (${item.quantity} × ₵${item.price.toFixed(2)})</span>
+          <span>₵${itemTotal.toFixed(2)}</span>
+        </div>
+      `;
+    });
+    
+    orderItemsEl.innerHTML = itemsHTML;
+    orderTotalEl.value = `₵${total.toFixed(2)}`;
+  }
+  
+  // Checkout function
+  function checkout() {
+    if (cart.length === 0) {
+      Swal.fire({
+        title: 'Empty Cart!',
+        text: 'Please add items to your cart before checkout',
+        icon: 'warning',
+        confirmButtonColor: '#FFD700'
+      });
+      return;
+    }
+    
+    showSection('order');
+    toggleCart();
+  }
+  
+  // Pay with Paystack
+  function payWithPaystack() {
+    const email = document.getElementById('order-email').value;
+    const name = document.getElementById('order-name').value;
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    if (!email) {
+      Swal.fire({
+        title: 'Email Required!',
+        text: 'Please enter your email address',
+        icon: 'warning',
+        confirmButtonColor: '#FFD700'
+      });
+      return;
+    }
+    
+    if (total <= 0) {
+      Swal.fire({
+        title: 'Invalid Amount!',
+        text: 'Your order total must be greater than zero',
+        icon: 'warning',
+        confirmButtonColor: '#FFD700'
+      });
+      return;
+    }
+    
+    let handler = PaystackPop.setup({
+      key: 'pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf', // Replace with your Paystack public key
+      email: email,
+      amount: total * 100, // Convert to pesewas
+      currency: 'GHS',
+      ref: 'VALLEYZ_' + Math.floor((Math.random() * 1000000000) + 1),
+      callback: function(response) {
+        // On successful payment
+        submitOrder('paid', response.reference);
+        
+        Swal.fire({
+          title: 'Payment Successful!',
+          text: 'Your order has been placed. Reference: ' + response.reference,
+          icon: 'success',
+          confirmButtonColor: '#FFD700'
+        }).then(() => {
+          clearCart();
+          showSection('home');
+        });
+      },
+      onClose: function() {
+        Swal.fire({
+          title: 'Payment Cancelled',
+          text: 'You closed the payment window',
+          icon: 'info',
+          confirmButtonColor: '#FFD700'
+        });
+      }
+    });
+    
+    handler.openIframe();
+  }
+  
+  // Submit order (for bank transfer)
+  document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (cart.length === 0) {
+      Swal.fire({
+        title: 'Empty Cart!',
+        text: 'Please add items to your cart before placing order',
+        icon: 'warning',
+        confirmButtonColor: '#FFD700'
+      });
+      return;
+    }
+    
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    
+    if (paymentMethod === 'bank') {
+      submitOrder('pending', 'Bank Transfer');
+      
+      Swal.fire({
+        title: 'Order Received!',
+        html: `
+          <p>Your order has been received and is pending payment.</p>
+          <p>Please complete your bank transfer and upload proof when you have it.</p>
+        `,
+        icon: 'success',
+        confirmButtonColor: '#FFD700'
+      }).then(() => {
+        clearCart();
+        showSection('home');
+      });
     }
   });
-
-  handler.openIframe();
-}
-
-</script>
-
-<script>
-  function submitToGoogleSheet(orderData) {
-    fetch("https://script.google.com/macros/s/AKfycbyEsv93rjrfdNRzfhiVcgn9QLvtDzlG1GiOyQanj_BILR_6dM8nCbzJ3L8h14mxDsL-uQ/exec", {
-      method: "POST",
-      body: JSON.stringify(orderData),
-      headers: { "Content-Type": "application/json" }
-    })
-    .then(res => res.text())
-    .then(response => {
-      alert("Order submitted successfully!");
-      window.location.reload(); // or redirect if you prefer
-    })
-    .catch(err => {
-      alert("Submission failed.");
-      console.error(err);
-    });
+  
+  // Submit order to server (simulated)
+  function submitOrder(status, reference) {
+    const orderData = {
+      name: document.getElementById('order-name').value,
+      email: document.getElementById('order-email').value,
+      phone: document.getElementById('order-phone').value,
+      items: cart,
+      total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      note: document.getElementById('order-note').value,
+      payment_method: document.querySelector('input[name="payment_method"]:checked').value,
+      payment_status: status,
+      payment_reference: reference,
+      latitude: document.getElementById('latitude').value,
+      longitude: document.getElementById('longitude').value,
+      timestamp: new Date().toISOString()
+    };
+    
+    // In a real app, you would send this to your backend
+    console.log('Order submitted:', orderData);
+    
+    // Simulate saving to localStorage for demo purposes
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    orders.push(orderData);
+    localStorage.setItem('orders', JSON.stringify(orders));
   }
+  
+  // Initialize cart on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    updateCartCount();
+    loadGoogleMaps();
+  });
 </script>
-<script>
-  function toggleMenu() {
-    const menu = document.getElementById("mobileMenu");
-    menu.classList.toggle("show");
-  }
-
-  function switchSection(id) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(section => {
-      section.classList.remove('active');
-    });
-
-    // Show selected section
-    document.getElementById(id).classList.add('active');
-
-    // Hide mobile menu
-    const menu = document.getElementById("mobileMenu");
-    menu.classList.remove("show");
-  }
-</script>
-
-
-
 </body>
 </html>
