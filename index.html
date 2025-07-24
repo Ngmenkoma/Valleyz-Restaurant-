@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
-
-
 
   <style>
     * {
@@ -22,15 +23,15 @@
       font-family: 'Poppins', sans-serif;
       background: white;
       color: white;
-      overflow: hidden; /* prevent scroll */
+      overflow-x: hidden;
     }
+    
     .handwriting {
-  font-family: 'Lucida Handwriting', cursive;
-  font-size: 2.5rem;
-  color: #FFD700;
-  letter-spacing: 1px;
-}
-
+      font-family: 'Lucida Handwriting', cursive;
+      font-size: 2.5rem;
+      color: #FFD700;
+      letter-spacing: 1px;
+    }
 
     .section {
       display: none;
@@ -59,6 +60,47 @@
       box-sizing: border-box;
     }
 
+    /* Menu Tabs Styling */
+    .menu-tabs {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 1rem;
+    }
+    
+    .menu-tab {
+      padding: 0.5rem 1.5rem;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .menu-tab.active {
+      background: #FFD700;
+      color: #000;
+    }
+    
+    .menu-category {
+      display: none;
+    }
+    
+    .menu-category.active {
+      display: block;
+    }
+    
+    .category-title {
+      color: #FFD700;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+    }
+
     .hero-text {
       flex: 1;
       max-width: 50%;
@@ -76,7 +118,7 @@
       border-radius: 10px;
       max-height: 60vh;
       object-fit: cover;
- box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
 
     h1 {
@@ -104,6 +146,14 @@
       font-weight: bold;
       border-radius: 5px;
       text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #ffea00;
+      transform: translateY(-2px);
     }
 
     .main-nav {
@@ -126,6 +176,7 @@
       text-decoration: none;
       font-weight: 500;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .main-nav a:hover {
@@ -146,304 +197,326 @@
       .hero-img img {
         max-height: 40vh;
       }
+      
+      .menu-tabs {
+        flex-direction: column;
+      }
     }
-   /* Homepage - Blurred Background Swiper */
-/* Glassmorphism Background for Homepage */
-/* Glassmorphism Effect for Homepage */
-#home .swiper {
-  position: relative;
-  height: 100vh;
-  background: url('e1.jpg') no-repeat center center;
-  background-size: cover;
-  overflow: hidden;
-}
+    
+    .swiper {
+      background: url('e1.jpg') no-repeat center center;
+      background-size: cover;
+    }
 
-/* Frosted glass overlay */
-#home .swiper::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(15px) saturate(160%);
-  -webkit-backdrop-filter: blur(15px) saturate(160%);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 0;
-}
+    .swiper-slide::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
 
-/* Content container */
-#home .swiper-slide {
-  display: flex;
-  position: relative;
-  z-index: 2;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-}
+    .swiper-slide > * {
+      position: relative;
+      z-index: 2;
+    }
+    
+    #menu {
+      padding: 2rem;
+    }
 
-/* Text panel - glass card */
-#home .hero-text {
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 16px;
-  padding: 2.5rem;
-  max-width: 500px;
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-}
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
 
-/* Typography enhancements */
-#home .handwriting {
-  font-size: 3rem;
-  color: #FFD700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  margin-bottom: 1rem;
-}
+    .product-card {
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-#home h2 {
-  font-size: 2.2rem;
-  color: white;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-}
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    }
 
-#home p {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
 
-/* Image styling */
-#home .hero-img img {
-  width: 100%;
-  max-width: 450px;
-  border-radius: 12px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+    .product-card h3 {
+      margin: 0.75rem 0 0.25rem;
+      font-size: 1.2rem;
+      color: #FFD700;
+    }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  #home .swiper-slide {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  #home .hero-text {
-    max-width: 100%;
-    margin-bottom: 2rem;
-  }
-  
-  #home .hero-img img {
-    max-height: 50vh;
-  }
-}/* Content styling (ensure readability) */
-#home .hero-text {
-  position: relative;
-  z-index: 2; /* Above glass layer */
-  background: rgba(0, 0, 0, 0.4); /* Slight dark tint for contrast */
-  backdrop-filter: blur(4px); /* Optional: subtle text area blur */
-  border-radius: 16px; /* Rounded corners */
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
-  border: 1px solid rgba(255, 215, 0, 0.3); /* Gold accent border */
-}
+    .product-card .price {
+      font-size: 1rem;
+      color: #bbb;
+      margin: 0.5rem 0;
+    }
 
-/* Text adjustments for glass effect */
-#home .handwriting {
-  color: #FFD700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
+    .product-card .btn {
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      display: inline-block;
+    }
+    
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
 
-#home p {
-  color: rgba(255, 255, 255, 0.9); /* Bright white */
-}
-#menu {
-  padding: 2rem;
-}
+    .gallery-grid img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+    }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
+    .gallery-grid img:hover {
+      transform: scale(1.03);
+    }
 
-.product-card {
-  background: #1a1a1a;
-  border-radius: 10px;
-  overflow: hidden;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .contact-form {
+      margin-top: 2rem;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-}
+    .contact-form label {
+      font-weight: 500;
+      color: #FFD700;
+    }
 
-.product-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
+    .contact-form input,
+    .contact-form textarea {
+      padding: 0.75rem;
+      border: none;
+      border-radius: 5px;
+      background: #222;
+      color: white;
+      font-size: 1rem;
+    }
 
-.product-card h3 {
-  margin: 0.75rem 0 0.25rem;
-  font-size: 1.2rem;
-  color: #FFD700;
-}
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: 2px solid #FFD700;
+      background: #111;
+    }
 
-.product-card .price {
-  font-size: 1rem;
-  color: #bbb;
-}
+    .contact-form .btn {
+      width: fit-content;
+      background: #FFD700;
+      color: #000;
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
 
-.product-card .btn {
-  margin: 1rem auto;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
-}
+    .contact-form .btn:hover {
+      background: #fff200;
+    }
+    
+    #contact {
+      padding-bottom: 5rem;
+    }
 
-.gallery-grid img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: transform 0.3s ease;
-}
+    #order {
+      padding-bottom: 5rem;
+    }
+    
+    /* Hamburger styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 22px;
+      cursor: pointer;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1100;
+    }
 
-.gallery-grid img:hover {
-  transform: scale(1.03);
-}
+    .hamburger .bar {
+      height: 4px;
+      background-color: #FFD700;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
 
-.contact-form {
-  margin-top: 2rem;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+    /* Hidden menu */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      top: 60px;
+      right: 1rem;
+      background: #111;
+      padding: 1rem;
+      border-radius: 10px;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
 
-.contact-form label {
-  font-weight: 500;
-  color: #FFD700;
-}
+    .mobile-menu a {
+      color: white;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
 
-.contact-form input,
-.contact-form textarea {
-  padding: 0.75rem;
-  border: none;
-  border-radius: 5px;
-  background: #222;
-  color: white;
-  font-size: 1rem;
-}
+    .mobile-menu a:hover {
+      color: #FFD700;
+      background: #222;
+      border-radius: 5px;
+    }
 
-.contact-form input:focus,
-.contact-form textarea:focus {
-  outline: 2px solid #FFD700;
-  background: #111;
-}
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
 
-.contact-form .btn {
-  width: fit-content;
-  background: #FFD700;
-  color: #000;
-  font-weight: bold;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 5px;
-}
+      .main-nav {
+        display: none;
+      }
 
-.contact-form .btn:hover {
-  background: #fff200;
-}
-#contact {
-  padding-bottom: 5rem; /* Space above the fixed navbar */
-}
+      .mobile-menu.show {
+        display: flex;
+      }
+      
+      .hamburger.active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      
+      .hamburger.active .bar:nth-child(2) {
+        opacity: 0;
+      }
+      
+      .hamburger.active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+    
+    /* Order form styles */
+    .swal2-input {
+      margin: 0.5em auto !important;
+      width: 80% !important;
+      background: #222 !important;
+      color: white !important;
+      border: none !important;
+    }
+    
+    .order-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .order-summary {
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: left;
+    }
+    
+    .order-summary p {
+      margin: 0.5rem 0;
+      color: #ddd;
+    }
+    
+    .order-summary strong {
+      color: #FFD700;
+    }
+    
+    /* Leaflet Map customization */
+    #delivery-map { /* Changed ID to avoid conflict */
+      height: 300px; /* Adjust height for SweetAlert */
+      width: 100%;
+      margin-top: 1rem;
+      border-radius: 10px;
+      background: #222;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .leaflet-container {
+      background: #222 !important;
+    }
+    
+    .leaflet-popup-content {
+      color: #000;
+    }
+    
+    /* Styles for the geocoder search control */
+    .leaflet-control-geocoder {
+        z-index: 1000; /* Ensure it's above the map tiles */
+        box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+        border-radius: 4px;
+        background-color: #fff; /* Light background for visibility */
+        color: #000; /* Black text for visibility */
+        border: 1px solid #ccc;
+    }
 
-#order {
-  padding-bottom: 5rem;
-}
-/* Hamburger styles */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 30px;
-  height: 22px;
-  cursor: pointer;
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1100;
-}
+    .leaflet-control-geocoder input {
+        background-color: #fff;
+        color: #000;
+        border: none;
+        padding: 5px;
+        font-size: 14px;
+        width: 180px;
+    }
 
-.hamburger .bar {
-  height: 4px;
-  background-color: #FFD700;
-  border-radius: 5px;
-}
+    .leaflet-control-geocoder .leaflet-control-geocoder-form input:focus {
+        outline: none;
+    }
 
-/* Hidden menu */
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  position: fixed;
-  top: 60px;
-  right: 1rem;
-  background: #111;
-  padding: 1rem;
-  border-radius: 10px;
-  z-index: 1000;
-}
-
-.mobile-menu a {
-  color: white;
-  padding: 0.5rem 0;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.mobile-menu a:hover {
-  color: #FFD700;
-}
-
-@media (max-width: 768px) {
-  .hamburger {
-    display: flex;
-  }
-
-  .main-nav {
-    display: none;
-  }
-
-  .mobile-menu.show {
-    display: flex;
-  }
-}
-
-
+    .leaflet-control-geocoder-icon {
+        background-color: #fff;
+        color: #000;
+    }
+    
+    /* Invert controls for better visibility on dark map */
+    .leaflet-control-zoom,
+    .leaflet-control-attribution a,
+    .leaflet-control-geocoder-icon {
+      filter: invert(1) hue-rotate(180deg) brightness(1.2);
+    }
+    
+    /* Ensure map tiles are visible */
+    .leaflet-tile {
+      filter: none !important; 
+    }
+    
+    /* SweetAlert specific map adjustments */
+    .swal2-html-container {
+      overflow: visible !important; /* Allow map to render properly */
+    }
   </style>
 </head>
 <body>
 
-<!-- HOME SWIPER -->
 <section id="home" class="section active">
   <div class="swiper">
     <div class="swiper-wrapper">
@@ -455,7 +528,7 @@
           <a class="btn" onclick="showSection('menu')">See Menu</a>
         </div>
         <div class="hero-img">
-          <img src="s1.jpg" alt="Dish 1">
+          <img src="s1.jpg" alt="Delicious Jollof Rice">
         </div>
       </div>
 
@@ -464,88 +537,140 @@
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
           <h2>Affordable Prices</h2>
           <p>Enjoy healthy and tasty food without breaking your wallet.</p>
-          <a class="btn" onclick="showSection('gallery')">See gallery</a>
+          <a class="btn" onclick="showSection('gallery')">See Gallery</a>
         </div>
         <div class="hero-img">
-          <img src="s2.jpg" alt="Dish 2">
+          <img src="s2.jpg" alt="Tasty Banku with Tilapia">
         </div>
       </div>
 
       <div class="swiper-slide">
         <div class="hero-text">
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
-          <h2>Affordable Prices</h2>
-          <p>Enjoy healthy and tasty food without breaking your wallet.</p>
-          <a class="btn" onclick="showSection('about us')">About us</a>
+          <h2>Cozy Atmosphere</h2>
+          <p>Experience our welcoming environment perfect for any occasion.</p>
+          <a class="btn" onclick="showSection('about')">About Us</a>
         </div>
         <div class="hero-img">
-          <img src="s3.jpg" alt="Dish 2">
+          <img src="s3.jpg" alt="Restaurant Interior">
         </div>
       </div> 
 
       <div class="swiper-slide">
         <div class="hero-text">
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
-          <h2>Affordable Prices</h2>
-          <p>Enjoy healthy and tasty food without breaking your wallet.</p>
-          <a class="btn" onclick="showSection('contact')">Contact Us</a>
+          <h2>Signature Cocktails</h2>
+          <p>Try our expertly crafted cocktails made with premium ingredients.</p>
+          <a class="btn" onclick="showSection('menu')">View Drinks</a>
         </div>
         <div class="hero-img">
-          <img src="s4.jpg" alt="Dish 2">
+          <img src="s4.jpg" alt="Cocktail Menu">
         </div>
       </div>
 
       <div class="swiper-slide">
         <div class="hero-text">
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
-          <h2>Affordable Prices</h2>
-          <p>Enjoy healthy and tasty food without breaking your wallet.</p>
-          <a class="btn" onclick="showSection('contact')">Contact Us</a>
+          <h2>Family Friendly</h2>
+          <p>A perfect place for family gatherings and celebrations.</p>
+          <a class="btn" onclick="showSection('contact')">Book a Table</a>
         </div>
         <div class="hero-img">
-          <img src="s5.jpg" alt="Dish 2">
+          <img src="s5.jpg" alt="Family Dining">
         </div>
       </div>
 
       <div class="swiper-slide">
         <div class="hero-text">
           <h1 class="handwriting">VALLEYZ RESTAURANT</h1>
-          <h2>Affordable Prices</h2>
-          <p>Enjoy healthy and tasty food without breaking your wallet.</p>
+          <h2>Open Daily</h2>
+          <p>We're open from 8am to 10pm every day to serve you.</p>
           <a class="btn" onclick="showSection('contact')">Contact Us</a>
         </div>
         <div class="hero-img">
-          <img src="s6.jpg" alt="Dish 2">
+          <img src="s6.jpg" alt="Restaurant Exterior">
         </div>
       </div>
     </div>
     <div class="swiper-pagination"></div>
   </div>
-  
-   
 </section>
 
-<!-- MENU -->
 <section id="menu" class="section">
   <h2>Our Menu</h2>
-  <p>Discover our variety of meals from local and international cuisines.</p>
+  <p>Discover our variety of meals and drinks from local and international cuisines.</p>
   
+  <div class="menu-tabs">
+    <button class="menu-tab active" onclick="showMenuCategory('main')">Main Dishes</button>
+    <button class="menu-tab" onclick="showMenuCategory('cocktails')">Cocktails</button>
+  </div>
 
- <!-- product cards -->
-  <div class="menu-grid">
-      <div class="product-card"><img src="1.jpg" alt="Jolof Rice" /><h3>Jollof Rice</h3><p class="price"> ₵10.00</p><button class="btn" onclick="orderNow('Jollof Rice')">Order Now</button>
-</div>
-      <div class="product-card"><img src="2.jpg" alt="Kenkey" /><h3>Kenkey</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Kenkey')">Order Now</button></div>
-      <div class="product-card"><img src="3.jpg" alt="Waakye" /><h3>Waakye</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Waakye')">Order Now</button></div>
-      <div class="product-card"><img src="4.jpg" alt="Jollof" /><h3>Jollof</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Jollof')">Order Now</button></div>
-      <div class="product-card"><img src="1.jpg" alt="Fufu" /><h3>Fufu</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Fufu')">Order Now</button></div>
-      <div class="product-card"><img src="2.jpg" alt="Banku" /><h3>Banku</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Banku')">Order Now</button></div>
-      <div class="product-card"><img src="3.jpg" alt="Tuo-zaafi" /><h3>Tuo-zaafi</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Tuo-zaafi')">Order Now</button></div>
-      <div class="product-card"><img src="4.jpg" alt="Rice Ball" /><h3>Rice Ball</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Rice Ball')">Order Now</button></div>
-      <div class="product-card"><img src="1.jpg" alt="Plain Rice" /><h3>Plain Rice</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('Plain Rice')">Order Now</button></div>
-      <div class="product-card"><img src="2.jpg" alt="kokonte" /><h3>Kokonte</h3><p class="price">₵10.00</p><button class="btn" onclick="orderNow('kokonte')">Order Now</button></div>
+  <div class="menu-category active" id="mainDishes">
+    <h3 class="category-title">Main Dishes</h3>
+    <div class="menu-grid">
+      <div class="product-card">
+        <img src="1.jpg" alt="Jollof Rice with Chicken" />
+        <h3>Jollof Rice</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Jollof Rice with Chicken', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="Kenkey with Fish" />
+        <h3>Kenkey with Fish</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Kenkey with Fish', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="3.jpg" alt="Waakye with Beef" />
+        <h3>Waakye with Beef</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Waakye with Beef', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="4.jpg" alt="Jollof with Grilled Fish" />
+        <h3>Jollof with Grilled Fish</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Jollof with Grilled Fish', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="1.jpg" alt="Fufu with Light Soup" />
+        <h3>Fufu with Light Soup</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Fufu with Light Soup', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="Banku with Tilapia" />
+        <h3>Banku with Tilapia</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Banku with Tilapia', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="3.jpg" alt="Tuo-zaafi with Ayoyo" />
+        <h3>Tuo-zaafi with Ayoyo</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Tuo-zaafi with Ayoyo', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="4.jpg" alt="Rice Ball with Groundnut Soup" />
+        <h3>Rice Ball with Groundnut Soup</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Rice Ball with Groundnut Soup', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="1.jpg" alt="Plain Rice with Chicken" />
+        <h3>Plain Rice with Chicken</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Plain Rice with Chicken', 10)">Order Now</button>
+      </div>
+      <div class="product-card">
+        <img src="2.jpg" alt="Kokonte with Palm Nut Soup" />
+        <h3>Kokonte with Palm Nut Soup</h3>
+        <p class="price">₵10.00</p>
+        <button class="btn" onclick="orderNow('Kokonte with Palm Nut Soup', 10)">Order Now</button>
+      </div>
+    </div>
+  </div>
 
- <!-- Cocktails -->
   <div class="menu-category" id="cocktails">
     <h3 class="category-title">Cocktails</h3>
     <div class="menu-grid">
@@ -553,103 +678,108 @@
         <img src="c1.jpg" alt="Pina Colada" />
         <h3>Pina Colada</h3>
         <p class="price">₵25.00</p>
-        <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Pina Colada', 25)">Order Now</button>
       </div>
       <div class="product-card">
         <img src="c2.jpg" alt="Mojito" />
         <h3>Mojito</h3>
         <p class="price">₵22.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Mojito', 22)">Order Now</button>
       </div>
       <div class="product-card">
         <img src="c3.jpg" alt="Margarita" />
         <h3>Margarita</h3>
         <p class="price">₵28.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Margarita', 28)">Order Now</button>
       </div>
       <div class="product-card">
         <img src="c4.jpg" alt="Daiquiri" />
         <h3>Daiquiri</h3>
         <p class="price">₵24.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Daiquiri', 24)">Order Now</button>
       </div>
       <div class="product-card">
         <img src="c5.jpg" alt="Cosmopolitan" />
         <h3>Cosmopolitan</h3>
         <p class="price">₵26.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Cosmopolitan', 26)">Order Now</button>
       </div>
       <div class="product-card">
         <img src="c6.jpg" alt="Mai Tai" />
         <h3>Mai Tai</h3>
         <p class="price">₵30.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Mai Tai', 30)">Order Now</button>
       </div>
-        <div class="product-card">
-        <img src="c7.jpg" alt="Mai Tai" />
-        <h3>Mai Tai</h3>
+      <div class="product-card">
+        <img src="c7.jpg" alt="Blue Lagoon" />
+        <h3>Blue Lagoon</h3>
         <p class="price">₵30.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Blue Lagoon', 30)">Order Now</button>
       </div>
-        <div class="product-card">
-        <img src="c8.jpg" alt="Mai Tai" />
-        <h3>Mai Tai</h3>
+      <div class="product-card">
+        <img src="c8.jpg" alt="Sex on the Beach" />
+        <h3>Sex on the Beach</h3>
         <p class="price">₵30.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Sex on the Beach', 30)">Order Now</button>
       </div>
-        <div class="product-card">
-        <img src="c9.jpg" alt="Mai Tai" />
-        <h3>Mai Tai</h3>
+      <div class="product-card">
+        <img src="c9.jpg" alt="Long Island Iced Tea" />
+        <h3>Long Island Iced Tea</h3>
         <p class="price">₵30.00</p>
-         <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+        <button class="btn" onclick="orderNow('Long Island Iced Tea', 30)">Order Now</button>
       </div>
-        <div class="product-card">
-        <img src="c10.jpg" alt="Mai Tai" />
-        <h3>Mai Tai</h3>
-        <button class="btn" onclick="orderNow('Pina Colada', 25, 'cocktail')">order now</button>
+      <div class="product-card">
+        <img src="c10.jpg" alt="Moscow Mule" />
+        <h3>Moscow Mule</h3>
+        <p class="price">₵30.00</p>
+        <button class="btn" onclick="orderNow('Moscow Mule', 30)">Order Now</button>
       </div>
     </div>
   </div>
 </section>
-<!-- GALLERY -->
+
 <section id="gallery" class="section">
   <h2>Gallery</h2>
   <p>Explore pictures of our beautiful dishes and cozy restaurant atmosphere.</p>
   <div class="gallery-grid">
-    <img src="1.jpg" alt="Gallery Image 1" />
-    <img src="2.jpg" alt="Gallery Image 2" />
-    <img src="3.jpg" alt="Gallery Image 3" />
-    <img src="4.jpg" alt="Gallery Image 4" />
-    <img src="1.jpg" alt="Gallery Image 5" />
-    <img src="2.jpg" alt="Gallery Image 6" />
-    <img src="3.jpg" alt="Gallery Image 6" />
-    <img src="4.jpg" alt="Gallery Image 6" />
-    <img src="1.jpg" alt="Gallery Image 6" />
-    <img src="2.jpg" alt="Gallery Image 6" />
-    
+    <img src="1.jpg" alt="Jollof Rice Platter" />
+    <img src="2.jpg" alt="Banku with Tilapia" />
+    <img src="3.jpg" alt="Restaurant Interior" />
+    <img src="4.jpg" alt="Cocktail Bar" />
+    <img src="1.jpg" alt="Family Dining Area" />
+    <img src="2.jpg" alt="Outdoor Seating" />
+    <img src="3.jpg" alt="Chef Preparing Food" />
+    <img src="4.jpg" alt="Special Occasion Setup" />
+    <img src="1.jpg" alt="Dessert Selection" />
+    <img src="2.jpg" alt="Happy Customers" />
   </div>
 </section>
 
-<!-- ABOUT -->
 <section id="about" class="section">
   <h2>About Us</h2>
   <p>Valleyz Restaurant is committed to delivering healthy, delicious meals with love and excellence.</p>
+  <div class="about-content">
+    <p>Founded in 2010, Valleyz Restaurant has been serving authentic Ghanaian and international cuisine with a modern twist. Our chefs combine traditional recipes with innovative techniques to create unforgettable dining experiences.</p>
+    <p>We source our ingredients from local farmers and suppliers to ensure freshness and support our community. Our restaurant provides a warm, welcoming atmosphere perfect for family gatherings, business meetings, and special occasions.</p>
+    <h3>Our Hours</h3>
+    <p>Monday - Friday: 8am - 10pm<br>
+    Saturday - Sunday: 9am - 11pm</p>
+  </div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact" class="section">
-  <h2>Contact</h2>
-  <p>Reach us at: <br>Email: info@valleyz.com <br>Phone: +123 456 7890</p>
-  <!-- CONTACT -->
-
-  <h2>Contact</h2>
-  <p>Reach us by filling out the form below:</p>
+  <h2>Contact Us</h2>
+  <p>Reach us at: <br>Email: info@valleyz.com <br>Phone: +233 123 456 789</p>
+  
   <form action="https://formspree.io/f/mblkdgdb" method="post" class="contact-form">
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" required>
 
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone">
 
     <label for="message">Message:</label>
     <textarea id="message" name="message" rows="5" required></textarea>
@@ -658,11 +788,6 @@
   </form>
 </section>
 
-</section>
-
-<!-- NAVIGATION -->
-
-<!-- Hamburger Menu -->
 <div class="hamburger" onclick="toggleMenu()">
   <div class="bar"></div>
   <div class="bar"></div>
@@ -673,7 +798,7 @@
   <a href="#home" onclick="switchSection('home')">Home</a>
   <a href="#menu" onclick="switchSection('menu')">Menu</a>
   <a href="#gallery" onclick="switchSection('gallery')">Gallery</a>
-  <a href="#order" onclick="switchSection('order')">Order</a>
+  <a href="#about" onclick="switchSection('about')">About Us</a>
   <a href="#contact" onclick="switchSection('contact')">Contact</a>
 </nav>
 
@@ -685,99 +810,18 @@
   <a onclick="showSection('contact')">Contact</a>
 </div>
 
-
-<!-- ORDER PAGE -->
-<section id="order" class="section">
-  <h2>Place Your Order</h2>
-  <p>Fill in the form below to place your order.</p>
-  <form class="contact-form" onsubmit="confirmOrder(event)">
-    <label for="order-name" onsubmit="return confirmOrder(event)">Your Name:</label>
-    <input type="text" id="order-name" name="order-name" required>
-    <label for="order-email">Your Email:</label>
-    <input type="email" id="order-email" name="order-email" required>
-    <input type="text" name="phone" placeholder="Phone Number" required>
-  <div id="map" style="height: 300px; width: 100%;"></div>
-  <input type="text" id="latitude" name="latitude" readonly>
-  <input type="text" id="longitude" name="longitude" readonly>
-    <label for="order-item">Select Item:</label>
-    <select id="order-item" name="order-item" required>
-      <option value="">-- Choose a Dish --</option>
-      <option value="Jollof Rice">Jollof Rice</option>
-      <option value="Kenkey">Kenkey</option>
-      <option value="Waakye">Waakye</option>
-      <option value="Fufu">Fufu</option>
-      <option value="Banku">Banku</option>
-      <option value="Tuo-zaafi">Tuo-zaafi</option>
-      <option value="Rice Ball">Rice Ball</option>
-      <option value="Plain Rice">Plain Rice</option>
-      <option value="Kokonte">Kokonte</option>
-    </select>
-
-    <label for="order-quantity">Quantity:</label>
-    <input type="number" id="order-quantity" name="order-quantity" min="1" value="1" required>
-
-   <!-- Submit button is disabled initially -->
-<button id="submit-btn" type="button" disabled>Submit Order</button>
-
-        <!-- Payment Method -->
-    <label>Select Payment Method:</label>
-    <label><input type="radio" name="payment_method" value="paystack" checked> Pay Online (Paystack)</label><br>
-    <label><input type="radio" name="payment_method" value="bank"> Bank Transfer</label>
-    <!-- Bank Payment Info -->
-    <div id="bank-details" style="display:none; margin-top: 1rem;">
-      <h4 style="color:#FFD700;">Bank Transfer Details</h4>
-      <p><strong>Bank:</strong> GCB Bank</p>
-      <p><strong>Account Name:</strong> Valleyz Restaurant</p>
-      <p><strong>Account Number:</strong> 1234567890</p>
-      <label for="payment_proof">Upload Proof of Payment:</label>
-      <input type="file" name="payment_proof" id="payment_proof">
-    </div>
-    <!-- Paystack Payment Trigger -->
-    <button type="button" id="paystack-btn" class="btn">Pay with Paystack</button>
-
-  </form>
-</section>
-<script>
-  function confirmOrder(event) {
-    event.preventDefault(); // prevent actual form submission
-
-    const name = document.getElementById('order-name').value;
-    const food = document.getElementById('order-item').value;
-    const qty = document.getElementById('order-quantity').value;
-
-    if (!name || !food || !qty) {
-      alert("Please fill in all fields.");
-      return false;
-    }
-
-   Swal.fire({
-  title: 'Order Received!',
-  text: `Thank you, ${name}! Your order for ${qty} x ${food} has been received.`,
-  icon: 'success',
-  confirmButtonColor: '#FFD700'
-}).then((result) => {
-      if (result.isConfirmed) {
-        // Optionally, redirect to a thank you page or reset the form
-        document.querySelector('.contact-form').reset();
-        showSection('home'); // Go back to home section
-      }
-    });
-
-  }
-</script>
-
-
-<!-- Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script>
+  // Initialize Swiper
   const swiper = new Swiper('.swiper', {
     direction: 'vertical',
     loop: true,
     autoplay: {
-      delay: 3000,
+      delay: 5000,
       disableOnInteraction: false
     },
-    speed:2000,
+    speed: 4000,
     
   });
 
@@ -787,170 +831,348 @@
       sec.classList.remove('active');
     });
     document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
   }
-</script>
 
-<script>
-  function orderNow(foodName) {
-    // Show the order section
-    showSection('order');
-
-    // Fill the dropdown
-    const dropdown = document.getElementById('order-item');
-    if (dropdown) {
-      dropdown.value = foodName;
-    }
-  }
-</script>
-<!-- Google Maps integration -->
-<div id="map" style="height: 300px; width: 100%; margin-top: 10px;"></div>
-<input type="hidden" id="latitude" name="latitude">
-<input type="hidden" id="longitude" name="longitude">
-
-<script>
-  let map;
-  let marker;
-
-  function initMap() {
-    const defaultLocation = { lat: 5.6148, lng: -0.2058 }; // Accra
-
-    map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 14,
-      center: defaultLocation
-    });
-
-    marker = new google.maps.Marker({
-      position: defaultLocation,
-      map: map,
-      draggable: true
-    });
-
-    // Update form values
-    document.getElementById("latitude").value = defaultLocation.lat;
-    document.getElementById("longitude").value = defaultLocation.lng;
-
-    marker.addListener("dragend", function () {
-      const pos = marker.getPosition();
-      document.getElementById("latitude").value = pos.lat().toFixed(6);
-      document.getElementById("longitude").value = pos.lng().toFixed(6);
-    });
-  }
-</script>
-
-<!-- Load Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer>
-
-</script>
-<script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-document.querySelectorAll('input[name="payment_method"]').forEach((input) => {
-  input.addEventListener('change', function () {
-    const method = this.value;
-    document.getElementById("bank-details").style.display = (method === 'bank') ? 'block' : 'none';
-    document.getElementById("paystack-btn").style.display = (method === 'paystack') ? 'inline-block' : 'none';
-  });
-});
-
-// Handle Paystack payment
-document.getElementById("paystack-btn").addEventListener("click", function () {
-  const email = document.getElementById("order-email").value;
-  const qty = document.getElementById("order-quantity").value;
-  const item = document.getElementById("order-item").value;
-  const amount = qty * 10 * 100; // ₵10 each, Paystack expects amount in pesewas
-
-  let handler = PaystackPop.setup({
-    key: 'pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf', // Replace with your Paystack public key
-    email: email,
-    amount: amount,
-    currency: 'GHS',
-    ref: 'VALLEYZ_' + Math.floor((Math.random() * 1000000000) + 1),
-    callback: function(response) {
-      Swal.fire('Payment Successful!', 'Reference: ' + response.reference, 'success');
-      document.querySelector('.contact-form').reset();
-      showSection('home');
-    },
-    onClose: function() {
-      Swal.fire('Payment Cancelled', 'You closed the payment window.', 'info');
-    }
-  });
-  handler.openIframe();
-});
-function payWithPaystack() {
-  let handler = PaystackPop.setup({
-    key: "pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf",
-    email: document.getElementById("email").value,
-    amount: parseFloat(document.getElementById("total").value) * 100, // kobo
-    currency: "GHS",
-    
-    onSuccess: function(transaction) {
-      const orderData = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        items: document.getElementById("items").value,
-        total: document.getElementById("total").value,
-        note: document.getElementById("note").value,
-        payment_method: "paystack",
-        payment_status: "paid",
-        latitude: document.getElementById("latitude").value,
-        longitude: document.getElementById("longitude").value
-      };
-       // Enable submit button
-       document.getElementById("submit-btn").disabled = false;
-
-      submitToGoogleSheet(orderData);
-    },
-
-    onClose: function() {
-      alert("Payment was not completed.");
-    }
-  });
-
-  handler.openIframe();
-}
-
-</script>
-
-<script>
-  function submitToGoogleSheet(orderData) {
-    fetch("https://script.google.com/macros/s/AKfycbyEsv93rjrfdNRzfhiVcgn9QLvtDzlG1GiOyQanj_BILR_6dM8nCbzJ3L8h14mxDsL-uQ/exec", {
-      method: "POST",
-      body: JSON.stringify(orderData),
-      headers: { "Content-Type": "application/json" }
-    })
-    .then(res => res.text())
-    .then(response => {
-      alert("Order submitted successfully!");
-      window.location.reload(); // or redirect if you prefer
-    })
-    .catch(err => {
-      alert("Submission failed.");
-      console.error(err);
-    });
-  }
-</script>
-<script>
+  // Mobile menu toggle
   function toggleMenu() {
     const menu = document.getElementById("mobileMenu");
+    const hamburger = document.querySelector(".hamburger");
     menu.classList.toggle("show");
+    hamburger.classList.toggle("active");
   }
 
   function switchSection(id) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(section => {
-      section.classList.remove('active');
+    showSection(id);
+    toggleMenu();
+  }
+
+  // Show menu category function
+  function showMenuCategory(category) {
+    // Update tabs
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.classList.remove('active');
     });
+    event.target.classList.add('active');
+    
+    // Show selected category
+    document.querySelectorAll('.menu-category').forEach(cat => {
+      cat.classList.remove('active');
+    });
+    document.getElementById(category === 'main' ? 'mainDishes' : 'cocktails').classList.add('active');
+  }
 
-    // Show selected section
-    document.getElementById(id).classList.add('active');
+  // Global variables for map and marker in SweetAlert
+  let deliveryMap = null;
+  let deliveryMarker = null;
+  // Initialize selectedLocation with coordinates for Wa, Upper West Region, Ghana
+  let selectedLocation = { lat: 10.0679, lng: -2.5029, address: "Not selected (Click on map or search)" }; 
 
-    // Hide mobile menu
-    const menu = document.getElementById("mobileMenu");
-    menu.classList.remove("show");
+  // Update the hidden input field and display span with the selected location
+  function updateLocationInput() {
+    const locationInput = document.getElementById('delivery-location-input');
+    const displayLocationSpan = document.getElementById('display-location');
+    const displayAddressSpan = document.getElementById('display-address');
+
+    if (locationInput) {
+      locationInput.value = `${selectedLocation.lat}, ${selectedLocation.lng}`;
+      displayLocationSpan.textContent = `Lat: ${selectedLocation.lat.toFixed(4)}, Lng: ${selectedLocation.lng.toFixed(4)}`;
+      displayAddressSpan.textContent = `Address: ${selectedLocation.address}`;
+    }
+  }
+
+  // Initialize Leaflet Map for SweetAlert
+  function initializeDeliveryMap() {
+      // Destroy existing map instance if it exists
+      if (deliveryMap) {
+          deliveryMap.remove();
+          deliveryMap = null;
+          deliveryMarker = null;
+      }
+
+      // Default location for Wa, Upper West Region, Ghana
+      const defaultMapCenter = [10.0679, -2.5029]; 
+
+      deliveryMap = L.map('delivery-map', {
+          preferCanvas: true,
+          zoomControl: true
+      }).setView(defaultMapCenter, 13); // Zoomed out a bit more for area selection
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+      }).addTo(deliveryMap);
+
+      const deliveryIcon = L.icon({
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/2776/2776067.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+      });
+
+      deliveryMarker = L.marker(defaultMapCenter, { icon: deliveryIcon, draggable: true }).addTo(deliveryMap);
+      
+      // Update selectedLocation when marker is dragged
+      deliveryMarker.on('dragend', function(event) {
+          const markerLatLng = event.target.getLatLng();
+          selectedLocation.lat = markerLatLng.lat;
+          selectedLocation.lng = markerLatLng.lng;
+          selectedLocation.address = "Custom Location (Dragged)"; // Clear previous address if dragged
+          updateLocationInput();
+          // Optional: Reverse geocode here to get a readable address if needed
+          reverseGeocode(markerLatLng.lat, markerLatLng.lng);
+      });
+
+      // Update selectedLocation when map is clicked
+      deliveryMap.on('click', function(e) {
+          selectedLocation.lat = e.latlng.lat;
+          selectedLocation.lng = e.latlng.lng;
+          deliveryMarker.setLatLng(e.latlng); // Move marker to clicked location
+          selectedLocation.address = "Custom Location (Clicked)"; // Clear previous address if clicked
+          updateLocationInput();
+          // Optional: Reverse geocode here to get a readable address if needed
+          reverseGeocode(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Initialize the geocoder control
+      const geocoder = L.Control.geocoder({
+          defaultMarkGeocodedLocation: false, // We'll handle the marker
+          placeholder: 'Search for delivery address...',
+          collapsed: false, // Keep the search bar open
+          position: 'topleft', // Position the search bar
+          errorMessage: 'Nothing found.'
+      }).addTo(deliveryMap);
+
+      // Listen for when a result is found from the search bar
+      geocoder.on('markgeocode', function(e) {
+          const bbox = e.geocode.bbox;
+          const coords = e.geocode.center;
+          const name = e.geocode.name;
+
+          selectedLocation.lat = coords.lat;
+          selectedLocation.lng = coords.lng;
+          selectedLocation.address = name;
+
+          // Move the map view to the selected location
+          deliveryMap.fitBounds(bbox);
+          deliveryMarker.setLatLng(coords); // Move marker to the searched location
+          updateLocationInput();
+      });
+
+      // Set initial location input value
+      selectedLocation = { lat: defaultMapCenter[0], lng: defaultMapCenter[1], address: "Click on map or search for address" };
+      updateLocationInput();
+  }
+
+  // Function to perform reverse geocoding (optional, but good for user clarity)
+  // This uses Nominatim, be mindful of their usage policy (fair use)
+  function reverseGeocode(lat, lng) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+          .then(response => response.json())
+          .then(data => {
+              if (data && data.display_name) {
+                  selectedLocation.address = data.display_name;
+              } else {
+                  selectedLocation.address = "Unknown Address";
+              }
+              updateLocationInput();
+          })
+          .catch(error => {
+              console.error("Error during reverse geocoding:", error);
+              selectedLocation.address = "Error getting address";
+              updateLocationInput();
+          });
+  }
+
+  // Order functionality
+  function orderNow(itemName, price) {
+    Swal.fire({
+      title: `Order ${itemName}`,
+      html: `
+        <div class="order-summary">
+          <p><strong>Item:</strong> ${itemName}</p>
+          <p><strong>Unit Price:</strong> ₵${price.toFixed(2)}</p>
+        </div>
+        <div class="order-form">
+          <input type="number" id="quantity" class="swal2-input" placeholder="Quantity" min="1" value="1">
+          <input type="text" id="customer-name" class="swal2-input" placeholder="Your Name" required>
+          <input type="email" id="customer-email" class="swal2-input" placeholder="Your Email" required>
+          <input type="tel" id="customer-phone" class="swal2-input" placeholder="Your Phone Number">
+          <textarea id="special-requests" class="swal2-input" placeholder="Special requests (optional)" rows="3"></textarea>
+          
+          <h3 style="color: #FFD700; margin-top: 1rem;">Choose Delivery Location</h3>
+          <p style="font-size: 0.9em; color: #aaa;">Search for your address or click/drag the marker on the map to set your delivery spot.</p>
+          <div id="delivery-map" style="width: 100%; height: 300px; border-radius: 10px; margin-bottom: 1rem;">
+            <div class="map-loading">Loading map...</div>
+          </div>
+          <input type="hidden" id="delivery-location-input" value="">
+          <p style="color: #ddd;">Selected Coordinates: <span id="display-location">Not selected</span></p>
+          <p style="color: #ddd;">Selected Address: <span id="display-address">Not selected</span></p>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Proceed to Payment',
+      cancelButtonText: 'Cancel',
+      focusConfirm: false,
+      didOpen: () => {
+        initializeDeliveryMap();
+        if (deliveryMap) {
+            setTimeout(() => {
+                deliveryMap.invalidateSize();
+                deliveryMap.setView([10.0679, -2.5029], 13); // Recenter after invalidation
+            }, 100);
+        }
+      },
+      preConfirm: () => {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const name = document.getElementById('customer-name').value;
+        const email = document.getElementById('customer-email').value;
+        const phone = document.getElementById('customer-phone').value;
+        const requests = document.getElementById('special-requests').value;
+        const deliveryLat = selectedLocation.lat;
+        const deliveryLng = selectedLocation.lng;
+        const deliveryAddress = selectedLocation.address;
+        
+        if (!quantity || quantity < 1) {
+          Swal.showValidationMessage('Please enter a valid quantity');
+          return false;
+        }
+        
+        if (!name) {
+          Swal.showValidationMessage('Please enter your name');
+          return false;
+        }
+        
+        if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+          Swal.showValidationMessage('Please enter a valid email');
+          return false;
+        }
+
+        // Validate that a specific location has been selected, not just the default
+        if (deliveryLat === 10.0679 && deliveryLng === -2.5029 && deliveryAddress === "Click on map or search for address") { 
+            Swal.showValidationMessage('Please select your delivery location on the map using search or by clicking/dragging.');
+            return false;
+        }
+        
+        return {
+          item: itemName,
+          price: price,
+          quantity: quantity,
+          total: (price * quantity).toFixed(2),
+          name: name,
+          email: email,
+          phone: phone,
+          requests: requests,
+          deliveryLocation: { lat: deliveryLat, lng: deliveryLng, address: deliveryAddress },
+          ref: 'ORD-' + Math.floor(Math.random() * 1000000)
+        };
+      },
+      willClose: () => {
+          if (deliveryMap) {
+              deliveryMap.remove();
+              deliveryMap = null;
+              deliveryMarker = null;
+          }
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        processPayment(result.value);
+      }
+    });
+  }
+
+  function processPayment(order) {
+    Swal.fire({
+      title: 'Confirm Your Order',
+      html: `
+        <div class="order-summary">
+          <p><strong>Item:</strong> ${order.item}</p>
+          <p><strong>Quantity:</strong> ${order.quantity}</p>
+          <p><strong>Total Amount:</strong> ₵${order.total}</p>
+          ${order.requests ? `<p><strong>Special Requests:</strong> ${order.requests}</p>` : ''}
+          <p><strong>Delivery Location:</strong> Lat: ${order.deliveryLocation.lat.toFixed(4)}, Lng: ${order.deliveryLocation.lng.toFixed(4)}</p>
+          <p><strong>Delivery Address:</strong> ${order.deliveryLocation.address}</p>
+          <p><strong>Order Reference:</strong> ${order.ref}</p>
+          <p><strong>Customer:</strong> ${order.name}</p>
+        </div>
+        <p>You'll receive confirmation at ${order.email}</p>
+      `,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Pay ₵' + order.total,
+      cancelButtonText: 'Cancel Order',
+      confirmButtonColor: '#FFD700'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Initialize Paystack payment
+        const handler = PaystackPop.setup({
+          key: 'pk_live_623aac8344ef10cc7a7d52f2918155b9185604bf', // Replace with your actual test public key
+          email: order.email,
+          amount: order.total * 100,
+          currency: 'GHS',
+          ref: order.ref,
+          metadata: {
+            custom_fields: [
+              {
+                display_name: "Customer Name",
+                variable_name: "customer_name",
+                value: order.name
+              },
+              {
+                display_name: "Order Items",
+                variable_name: "order_items",
+                value: `${order.item} x ${order.quantity}`
+              },
+              {
+                display_name: "Delivery Lat",
+                variable_name: "delivery_lat",
+                value: order.deliveryLocation.lat
+              },
+              {
+                display_name: "Delivery Lng",
+                variable_name: "delivery_lng",
+                value: order.deliveryLocation.lng
+              },
+              {
+                display_name: "Delivery Address",
+                variable_name: "delivery_address",
+                value: order.deliveryLocation.address
+              }
+            ]
+          },
+          callback: function(response) {
+            Swal.fire({
+              title: 'Payment Successful!',
+              html: `
+                <div class="order-summary">
+                  <p><strong>Order Complete!</strong></p>
+                  <p>Reference: ${order.ref}</p>
+                  <p>${order.item} x ${order.quantity}</p>
+                  <p>Total Paid: ₵${order.total}</p>
+                  <p>Customer: ${order.name}</p>
+                  <p>Delivery to: ${order.deliveryLocation.address} (Lat: ${order.deliveryLocation.lat.toFixed(4)}, Lng: ${order.deliveryLocation.lng.toFixed(4)})</p>
+                  <p>A confirmation has been sent to ${order.email}</p>
+                </div>
+                <p>Thank you for your order!</p>
+              `,
+              icon: 'success',
+              confirmButtonColor: '#FFD700'
+            });
+            
+            console.log('Order completed:', order);
+          },
+          onClose: function() {
+            Swal.fire(
+              'Payment Cancelled',
+              'You can complete your payment later. Your order reference is: ' + order.ref,
+              'info'
+            );
+          }
+        });
+        handler.openIframe();
+      }
+    });
   }
 </script>
-
-
-
 </body>
 </html>
